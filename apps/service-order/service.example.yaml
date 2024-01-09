@@ -52,3 +52,4 @@ APM:
   secretToken: ${ELASTIC_APM_SECRET_TOKEN}
   environment: ${NODE_ENV}
   active: true # Cho phép sử dụng APM hay không
+  transactionSampleRate: 1.0 # Tỷ lệ mẫu giao dịch (tỷ lệ mẫu giao dịch mặc định là 1.0)

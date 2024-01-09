@@ -8,7 +8,7 @@ import { isLocal } from '@skygate/shared';
 export class SimpleLoggerService extends ConsoleLogger {
   public readonly env = process.env.NODE_ENV || 'development';
 
-  constructor(@Inject(APM_INSTANCE) private readonly apm: APM.Agent) {
+  constructor(@Inject(APM_INSTANCE) private readonly elasicAPM: APM.Agent) {
     super(SimpleLoggerService.name);
   }
 
@@ -77,7 +77,7 @@ export class SimpleLoggerService extends ConsoleLogger {
     writeStreamType?: 'stdout' | 'stderr',
   ) {
     const messageLocal = messages.map((data) => this.stringifyMessage(data, level));
-    const traceId = this.apm.currentTraceIds['trace.id'] || '---';
+    const traceId = this.elasicAPM.currentTraceIds['trace.id'] || '---';
     const levelString = level.toUpperCase().padStart(7, ' ');
     const formattedMsgs = isLocal()
       ? messageLocal
@@ -96,13 +96,16 @@ export class SimpleLoggerService extends ConsoleLogger {
     const composedMessage = `${formattedDate} ${formattedLogLevel} ${formattedTraceId} ${formattedContext}`;
 
     // Tìm kiếm transaction và tạo các cặp thẻ span
-    // Nếu có span hiện tại, kết thúc nó
-    const transaction = this.apm.currentTransaction;
-    const span = this.apm.currentSpan;
-    span && (span.outcome = 'success') && span.end();
+    const transaction = this.elasicAPM.currentTransaction;
 
-    // Bắt đầu một span mới với parent là transaction hiện tại
-    transaction && transaction.startSpan(messageRef);
+    // Nếu có transaction, tạo span mới và kết thúc span hiện tại
+    // Kết thúc span hiện tại để giúp đo thời gian thực thi
+    if (transaction) {
+      const span = this.elasicAPM.startSpan(messageRef, 'LOG');
+
+      // Kết thúc span hiện tại
+      span.end();
+    }
 
     // Ghi log
     writeStreamType == 'stderr'

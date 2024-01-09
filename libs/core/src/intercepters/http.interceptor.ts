@@ -53,9 +53,22 @@ export class HttpInterceptor<T> implements NestInterceptor<T> {
         transaction.result = HttpStatus.OK;
         response && response.status && response.status(HttpStatus.OK);
 
-        // End transaction and span
+        // Log info result and duration of the transaction
         Logger.log(`${endpoint} ${transaction.result} [${Date.now() - preTimeNow}ms]`);
-        transaction.end();
+        const span = this.elasticAPM.currentSpan;
+
+        // End transaction and span
+        transaction && transaction.end();
+        span && span.end();
+
+        // Get trace id and traceparent from the transaction
+        // If context is available, then set trace id and traceparent to headers
+        const traceId = transaction.ids['trace.id'];
+        const traceparent = transaction.traceparent;
+
+        // Set trace id and traceparent to headers
+        response.setHeader('x-trace-id', traceId);
+        response.setHeader('x-traceparent-id', traceparent);
 
         // Return result and convert to standard response
         return {

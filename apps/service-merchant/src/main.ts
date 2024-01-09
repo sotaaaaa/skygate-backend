@@ -17,7 +17,7 @@ async function bootstrap() {
   await serviceBootstrap(app, {
     serviceName: process.env.SERVICE_NAME,
     configPath: process.env.configfile || 'apps/service-merchant/service.config.yaml',
-    servicePort: configService.get<number>('application.port') || 15000,
+    servicePort: configService.get<number>('application.port') || 150000,
   });
 }
 bootstrap();

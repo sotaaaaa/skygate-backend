@@ -54,16 +54,18 @@ export class RpcInterceptor<T> implements NestInterceptor<T> {
     transaction = this.elasticAPM.startTransaction(endpoint, 'RPC', {
       childOf: traceparent,
     });
-    const span = transaction.startSpan(endpoint, 'RPC');
 
     // Change request status to 200 and end span when request is completed
     // If error, then change request status to 500
     return next.handle().pipe(
       map((value) => {
-        // End transaction and span
+        // Change transaction result to 200 and end transaction
         transaction.result = HttpStatus.OK;
         transaction.end();
-        span.end();
+
+        // Get span from the transaction and end it
+        const span = this.elasticAPM.currentSpan;
+        span && span.end();
 
         // Return result
         return value;
