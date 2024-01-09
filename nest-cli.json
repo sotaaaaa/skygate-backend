@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/service-merchant/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": false,
+    "tsConfigPath": "apps/service-merchant/tsconfig.app.json",
+    "watchAssets": true,
+    "assets": [
+      "**/*.json",
+      "**/*.proto",
+      "**/*.yml",
+      "**/*.yaml",
+      "**/*.png",
+      "**/*.conf"
+    ]
+  },
+  "projects": {
+    "service-merchant": {
+      "type": "application",
+      "root": "apps/service-merchant",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-merchant/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-merchant/tsconfig.app.json"
+      }
+    },
+    "service-order": {
+      "type": "application",
+      "root": "apps/service-order",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-order/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-order/tsconfig.app.json"
+      }
+    },
+    "service-resource": {
+      "type": "application",
+      "root": "apps/service-resource",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-resource/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-resource/tsconfig.app.json"
+      }
+    },
+    "core": {
+      "type": "library",
+      "root": "libs/core",
+      "entryFile": "index",
+      "sourceRoot": "libs/core/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/core/tsconfig.lib.json"
+      }
+    },
+    "protobuf": {
+      "type": "library",
+      "root": "libs/protobuf",
+      "entryFile": "index",
+      "sourceRoot": "libs/protobuf/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/protobuf/tsconfig.lib.json"
+      }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    },
+    "plugins": {
+      "type": "library",
+      "root": "libs/plugins",
+      "entryFile": "index",
+      "sourceRoot": "libs/plugins/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/plugins/tsconfig.lib.json"
+      }
+    }
+  },
+  "monorepo": true,
+  "root": "apps/service-merchant"
+}
