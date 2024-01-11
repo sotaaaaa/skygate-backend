@@ -56,10 +56,7 @@ export class ErrorExceptionFilter implements ExceptionFilter {
   private captureTraceToHeader(response: Response) {
     // Lấy transaction hiện tại từ APM.
     const transaction = this.elasticAPM.currentTransaction;
-    if (!transaction) {
-      Logger.warn('No transaction found in APM');
-      return;
-    }
+    if (!transaction) return;
 
     // Lấy trace id và traceparent từ transaction.
     const traceId = transaction.ids['trace.id'];
