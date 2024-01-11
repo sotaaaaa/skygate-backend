@@ -28,6 +28,7 @@ export class RpcInterceptor<T> implements NestInterceptor<T> {
   private endTransactionAPM(transaction: APM.Transaction, status = HttpStatus.OK) {
     // Change transaction result to 200
     transaction.result = status;
+    transaction.end();
 
     // Get span from the transaction and end it
     const span = this.elasticAPM.currentSpan;

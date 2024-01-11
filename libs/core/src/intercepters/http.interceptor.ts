@@ -54,6 +54,7 @@ export class HttpInterceptor<T> implements NestInterceptor<T> {
     // Set trace id and traceparent to headers
     response.setHeader('x-trace-id', traceId);
     response.setHeader('x-traceparent-id', traceparent);
+    response.setHeader('x-transaction-status', transaction.result);
   }
 
   /**
