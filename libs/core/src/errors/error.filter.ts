@@ -57,7 +57,7 @@ export class ErrorExceptionFilter implements ExceptionFilter {
     // Lấy transaction hiện tại từ APM.
     const transaction = this.elasticAPM.currentTransaction;
     if (!transaction) {
-      console.warn('No transaction found in APM');
+      Logger.warn('No transaction found in APM');
       return;
     }
 
