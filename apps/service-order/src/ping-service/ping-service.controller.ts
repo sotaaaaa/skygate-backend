@@ -1,5 +1,5 @@
 import { Controller, Logger } from '@nestjs/common';
-import { RemoteFuncToService } from '@skygate/core';
+import { ServiceToService } from '@skygate/core';
 import {
   PingServiceResponse,
   ServiceOrderController,
@@ -9,7 +9,7 @@ import {
 @Controller()
 @ServiceOrderControllerMethods()
 export class PingServiceController implements ServiceOrderController {
-  @RemoteFuncToService()
+  @ServiceToService()
   pingService(): Promise<PingServiceResponse> {
     Logger.log('Received ping request from service merchant.');
     return Promise.resolve({

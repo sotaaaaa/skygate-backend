@@ -13,6 +13,6 @@ export const ServiceToClient = () => {
  * Decorator that applies the `UseFilters` decorator with the `ErrorExceptionFilter` to a service method.
  * @returns The decorated method.
  */
-export const RemoteFuncToService = () => {
+export const ServiceToService = () => {
   return applyDecorators(UseInterceptors(RpcInterceptor));
 };
