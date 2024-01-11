@@ -4,7 +4,6 @@ import {
   HttpStatus,
   ExceptionFilter,
   Inject,
-  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ErrorResponse } from './error.exception';
@@ -27,7 +26,7 @@ export class ErrorExceptionFilter implements ExceptionFilter {
    * Details có thể là string hoặc object stringified.
    * @param exception
    */
-  private parseExceptionDetails(exception: RpcException) {
+  private parseRpcExceptionDetails(exception: RpcException) {
     try {
       // Lấy thông tin chi tiết từ exception dưới dạng string.
       // Parse thông tin chi tiết từ exception thành JSON.
@@ -48,26 +47,6 @@ export class ErrorExceptionFilter implements ExceptionFilter {
     }
   }
 
-  /**
-   * Set trace id and traceparent from APM transaction to header.
-   * x-trace-id, x-traceparent-id
-   * @param exception
-   */
-  private captureTraceToHeader(response: Response) {
-    // Lấy transaction hiện tại từ APM.
-    const transaction = this.elasticAPM.currentTransaction;
-    if (!transaction) return;
-
-    // Lấy trace id và traceparent từ transaction.
-    const traceId = transaction.ids['trace.id'];
-    const traceparent = transaction.traceparent;
-
-    // Get response từ exception.
-    response.setHeader('x-trace-id', traceId);
-    response.setHeader('x-traceparent-id', traceparent);
-    transaction.end(); // End transaction.
-  }
-
   // Phương thức này được gọi khi có exception được throw trong ứng dụng.
   catch(exception, host: ArgumentsHost) {
     // Lấy request và response object từ host.
@@ -86,15 +65,12 @@ export class ErrorExceptionFilter implements ExceptionFilter {
 
     // Log exception vào console.
     // Capture lỗi trong APM để theo dõi.
-    Logger.error(exception);
     this.elasticAPM.captureError(exception);
 
     // Nếu exception là RPC exception, parse thông tin chi tiết từ exception.
     if (isHttpRequest && !statusCode) {
       // Lấy thông tin chi tiết từ exception và kiểm tra xem nó có phải là JSON string hay không.
-      // Set trace id và traceparent từ APM transaction vào header.
-      const errorResponse = this.parseExceptionDetails(exception);
-      this.captureTraceToHeader(response);
+      const errorResponse = this.parseRpcExceptionDetails(exception);
 
       // Nếu không có response object (tức là chúng ta đang trong context của microservice), trả về error response.
       return response.status(HttpStatus.OK).json(errorResponse);
@@ -123,7 +99,6 @@ export class ErrorExceptionFilter implements ExceptionFilter {
     }
 
     // Nếu có response object (tức là chúng ta đang trong context của HTTP), gửi error response.
-    this.captureTraceToHeader(response); // Set trace id và traceparent từ APM transaction vào header.
     response.status(HttpStatus.OK).json(errorWithoutUndefined);
   }
 }

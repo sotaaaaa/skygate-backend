@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ErrorCodes } from '@skygate/core/constants';
 import { APM_INSTANCE } from '@skygate/plugins';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import { Response } from 'express';
 import * as APM from 'elastic-apm-node';
 
@@ -24,6 +24,37 @@ import * as APM from 'elastic-apm-node';
 @Injectable()
 export class HttpInterceptor<T> implements NestInterceptor<T> {
   constructor(@Inject(APM_INSTANCE) private readonly elasticAPM: APM.Agent) {}
+
+  /**
+   * End transaction and span when request is completed.
+   * Set trace id and traceparent to headers.
+   * @param response
+   * @param transaction
+   */
+  private setTraceToHeadersAndEndTransaction(
+    response: Response,
+    transaction: APM.Transaction,
+    status = HttpStatus.OK,
+  ) {
+    // Change transaction result to 200
+    // Set HTTP status code to OK
+    transaction.result = status;
+    response && response.status && response.status(HttpStatus.OK);
+
+    // End transaction and span
+    const span = this.elasticAPM.currentSpan;
+    transaction && transaction.end();
+    span && span.end();
+
+    // Get trace id and traceparent from the transaction
+    // If context is available, then set trace id and traceparent to headers
+    const traceId = transaction.ids['trace.id'];
+    const traceparent = transaction.traceparent;
+
+    // Set trace id and traceparent to headers
+    response.setHeader('x-trace-id', traceId);
+    response.setHeader('x-traceparent-id', traceparent);
+  }
 
   /**
    * Intercepts the HTTP request and response.
@@ -48,33 +79,29 @@ export class HttpInterceptor<T> implements NestInterceptor<T> {
     // Process the request and continue the transaction
     return next.handle().pipe(
       map((data) => {
-        // Change transaction result to 200
-        // Set HTTP status code to OK
-        transaction.result = HttpStatus.OK;
-        response && response.status && response.status(HttpStatus.OK);
-
         // Log info result and duration of the transaction
-        Logger.log(`${endpoint} ${transaction.result} [${Date.now() - preTimeNow}ms]`);
-        const span = this.elasticAPM.currentSpan;
-
-        // End transaction and span
-        transaction && transaction.end();
-        span && span.end();
-
-        // Get trace id and traceparent from the transaction
-        // If context is available, then set trace id and traceparent to headers
-        const traceId = transaction.ids['trace.id'];
-        const traceparent = transaction.traceparent;
-
         // Set trace id and traceparent to headers
-        response.setHeader('x-trace-id', traceId);
-        response.setHeader('x-traceparent-id', traceparent);
+        Logger.log(`${endpoint} ${transaction.result} [${Date.now() - preTimeNow}ms]`);
+        this.setTraceToHeadersAndEndTransaction(response, transaction);
 
-        // Return result and convert to standard response
         return {
           code: ErrorCodes.HttpSuccess,
           data: data,
         };
+      }),
+      catchError((error) => {
+        // Log info result and duration of the transaction
+        Logger.error(error);
+
+        // Set trace id and traceparent to headers
+        this.setTraceToHeadersAndEndTransaction(
+          response,
+          transaction,
+          HttpStatus.BAD_REQUEST,
+        );
+
+        // Throw error to the next handler
+        return throwError(() => error);
       }),
     );
   }

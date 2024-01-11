@@ -4,10 +4,11 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { APM_INSTANCE } from '@skygate/plugins';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import * as APM from 'elastic-apm-node';
 
 /**
@@ -18,6 +19,20 @@ import * as APM from 'elastic-apm-node';
 @Injectable()
 export class RpcInterceptor<T> implements NestInterceptor<T> {
   constructor(@Inject(APM_INSTANCE) private readonly elasticAPM: APM.Agent) {}
+
+  /**
+   * End transaction and span when request is completed.
+   * @param transaction
+   * @param span
+   */
+  private endTransactionAPM(transaction: APM.Transaction, status = HttpStatus.OK) {
+    // Change transaction result to 200
+    transaction.result = status;
+
+    // Get span from the transaction and end it
+    const span = this.elasticAPM.currentSpan;
+    span && span.end();
+  }
 
   /**
    * Intercepts the RPC request and performs necessary actions.
@@ -32,7 +47,6 @@ export class RpcInterceptor<T> implements NestInterceptor<T> {
 
     // Create a new transaction and span
     let transaction: APM.Transaction;
-    let isCreatedTransaction = false;
 
     // Get the metadata from the context
     const metadata = context.getArgByIndex(1);
@@ -48,7 +62,6 @@ export class RpcInterceptor<T> implements NestInterceptor<T> {
       // Change metadata to trace id and traceparent from transaction
       metadata.internalRepr.set('trace-id', [transaction.ids['trace.id']]);
       metadata.internalRepr.set('traceparent', [transaction.traceparent]);
-      isCreatedTransaction = true; // Gắn flag để biết là đã tạo transaction mới
     }
 
     // If trace id is provided, then continue transaction
@@ -62,17 +75,20 @@ export class RpcInterceptor<T> implements NestInterceptor<T> {
     return next.handle().pipe(
       map((value) => {
         // Check if transaction is created, then change transaction result to 200
-        if (isCreatedTransaction) {
-          transaction.result = HttpStatus.OK;
-          transaction.end();
-        }
-
-        // Get span from the transaction and end it
-        const span = this.elasticAPM.currentSpan;
-        span && span.end();
+        this.endTransactionAPM(transaction);
 
         // Return result
         return value;
+      }),
+      catchError((error) => {
+        // Log info result and duration of the transaction
+        Logger.error(error);
+
+        // Check if transaction is created, then change transaction result to 200
+        this.endTransactionAPM(transaction, HttpStatus.BAD_REQUEST);
+
+        // Return error handler
+        return throwError(() => error);
       }),
     );
   }

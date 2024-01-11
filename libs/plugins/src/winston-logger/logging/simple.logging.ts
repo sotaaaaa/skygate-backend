@@ -1,8 +1,8 @@
 import { ConsoleLogger, Inject, Injectable, LogLevel } from '@nestjs/common';
 import { APM_INSTANCE } from '@skygate/plugins';
-import * as _ from 'lodash';
-import APM from 'elastic-apm-node';
 import { isLocal } from '@skygate/shared';
+import APM from 'elastic-apm-node';
+import * as _ from 'lodash';
 
 @Injectable()
 export class SimpleLoggerService extends ConsoleLogger {
