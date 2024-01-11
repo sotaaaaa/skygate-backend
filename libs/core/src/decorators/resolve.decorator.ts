@@ -8,3 +8,11 @@ import { HttpInterceptor, RpcInterceptor } from '@skygate/core';
 export const ServiceToClient = () => {
   return applyDecorators(UseInterceptors(HttpInterceptor, RpcInterceptor));
 };
+
+/**
+ * Decorator that applies the `UseFilters` decorator with the `ErrorExceptionFilter` to a service method.
+ * @returns The decorated method.
+ */
+export const RemoteFuncToService = () => {
+  return applyDecorators(UseInterceptors(RpcInterceptor));
+};

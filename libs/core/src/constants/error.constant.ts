@@ -17,7 +17,7 @@ export enum ErrorCodes {
   MongoDBDuplicateKeyError = 1100,
   MongoDBConnectError = 1101,
 
-  // 1500 - 1599: Mã lỗi liên quan đến gateway
-  GatewayRequestError = 1500,
-  GatewayTimeoutError = 1501,
+  // 1500 - 1599: Mã lỗi liên quan đến rpc
+  RpcRequestError = 1500,
+  RpcTimeoutError = 1501,
 }

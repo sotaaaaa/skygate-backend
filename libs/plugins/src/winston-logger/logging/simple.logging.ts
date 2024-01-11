@@ -101,10 +101,19 @@ export class SimpleLoggerService extends ConsoleLogger {
     // Nếu có transaction, tạo span mới và kết thúc span hiện tại
     // Kết thúc span hiện tại để giúp đo thời gian thực thi
     if (transaction) {
-      const span = this.elasicAPM.startSpan(messageRef, 'LOG');
+      /**
+       * Nếu level log là error thì sẽ capture error
+       * Còn không thì sẽ start span và end span
+       */
+      if (level == 'error') {
+        // Capture error to APM
+        this.elasicAPM.captureError(messageRef.toString());
 
-      // Kết thúc span hiện tại
-      span.end();
+        // Start span and end span
+      } else {
+        const span = transaction.startSpan(messageRef, levelString);
+        span.end();
+      }
     }
 
     // Ghi log

@@ -67,7 +67,7 @@ export class ClientGrpcExtraService implements OnModuleInit {
     // Start a new Elastic APM span for the gRPC method call
     const currentTraceparent = this.elasticAPM.currentTraceparent || 'none';
     const traceId = this.elasticAPM.currentTraceIds['trace.id'] || 'none';
-    const span = this.elasticAPM.startSpan(`gRPC ${methodName}`, 'custom');
+    const span = this.elasticAPM.startSpan(`gRPC ${methodName}`, 'gRPC Proxy');
 
     try {
       // Create a new Metadata object

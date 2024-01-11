@@ -32,6 +32,7 @@ export class RpcInterceptor<T> implements NestInterceptor<T> {
 
     // Create a new transaction and span
     let transaction: APM.Transaction;
+    let isCreatedTransaction = false;
 
     // Get the metadata from the context
     const metadata = context.getArgByIndex(1);
@@ -42,11 +43,12 @@ export class RpcInterceptor<T> implements NestInterceptor<T> {
     // If trace id is not provided, then new transaction
     if (traceId === 'none' || !traceId) {
       transaction = this.elasticAPM.startTransaction(endpoint, 'RPC');
-      transaction.startSpan(context.getHandler().name, 'RPC');
+      transaction.startSpan(context.getHandler().name, 'RPC Interceptor');
 
       // Change metadata to trace id and traceparent from transaction
       metadata.internalRepr.set('trace-id', [transaction.ids['trace.id']]);
       metadata.internalRepr.set('traceparent', [transaction.traceparent]);
+      isCreatedTransaction = true; // Gắn flag để biết là đã tạo transaction mới
     }
 
     // If trace id is provided, then continue transaction
@@ -59,9 +61,11 @@ export class RpcInterceptor<T> implements NestInterceptor<T> {
     // If error, then change request status to 500
     return next.handle().pipe(
       map((value) => {
-        // Change transaction result to 200 and end transaction
-        transaction.result = HttpStatus.OK;
-        transaction.end();
+        // Check if transaction is created, then change transaction result to 200
+        if (isCreatedTransaction) {
+          transaction.result = HttpStatus.OK;
+          transaction.end();
+        }
 
         // Get span from the transaction and end it
         const span = this.elasticAPM.currentSpan;

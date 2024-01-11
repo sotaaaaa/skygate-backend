@@ -15,6 +15,7 @@ export class MerchantController {
   @Get('/merchant/ping')
   async pingService() {
     Logger.log('Received ping request from client.');
-    return Promise.resolve('pong');
+    const response = await this.serviceOrderClient.pingService({}).toPromise();
+    return response;
   }
 }
