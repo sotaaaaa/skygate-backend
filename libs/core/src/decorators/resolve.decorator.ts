@@ -1,12 +1,21 @@
-import { UseInterceptors, applyDecorators } from '@nestjs/common';
-import { HttpInterceptor, RpcInterceptor } from '@skygate/core';
+import { RabbitHandlerConfig, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { UseFilters, UseInterceptors, applyDecorators } from '@nestjs/common';
+import {
+  RabbitExceptionFilter,
+  HttpInterceptor,
+  RpcInterceptor,
+  ErrorExceptionFilter,
+} from '@skygate/core';
 
 /**
  * Decorator that applies the `UseFilters` decorator with the `ErrorExceptionFilter` to a service method.
  * @returns The decorated method.
  */
 export const ServiceToClient = () => {
-  return applyDecorators(UseInterceptors(HttpInterceptor, RpcInterceptor));
+  return applyDecorators(
+    UseInterceptors(HttpInterceptor, RpcInterceptor),
+    UseFilters(ErrorExceptionFilter),
+  );
 };
 
 /**
@@ -14,5 +23,39 @@ export const ServiceToClient = () => {
  * @returns The decorated method.
  */
 export const ServiceToService = () => {
-  return applyDecorators(UseInterceptors(RpcInterceptor));
+  return applyDecorators(
+    UseInterceptors(RpcInterceptor),
+    UseFilters(ErrorExceptionFilter),
+  );
+};
+
+/**
+ * Decorator that applies the `UseFilters` decorator with the `ErrorExceptionFilter` to a service method.
+ * @returns The decorated method.
+ */
+export const GlobalErrorFilter = () => {
+  return applyDecorators(UseFilters(ErrorExceptionFilter));
+};
+
+/**
+ * Decorator that applies the `UseFilters` decorator with the `ErrorExceptionFilter` to a service method.
+ * @returns The decorated method.
+ */
+export const RabbitMQSubscribe = (
+  config: Pick<
+    RabbitHandlerConfig,
+    | 'exchange'
+    | 'routingKey'
+    | 'queue'
+    | 'queueOptions'
+    | 'name'
+    | 'connection'
+    | 'createQueueIfNotExists'
+    | 'assertQueueErrorHandler'
+    | 'errorBehavior'
+    | 'errorHandler'
+    | 'allowNonJsonMessages'
+  >,
+) => {
+  return applyDecorators(UseFilters(RabbitExceptionFilter), RabbitSubscribe(config));
 };

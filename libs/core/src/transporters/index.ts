@@ -1,3 +1,4 @@
-export * from './base.transport';
-export * from './grpc.transporter';
+export * from './base';
+export * from './grpc';
+export * from './amqp';
 export * from './core.transporter';

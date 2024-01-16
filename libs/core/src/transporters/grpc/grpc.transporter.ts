@@ -1,10 +1,10 @@
 import { INestApplication, Logger } from '@nestjs/common';
-import { BaseTransporter } from './base.transport';
+import { BaseTransporter } from '../base/base.transport';
 import { GrpcOptions, Transport } from '@nestjs/microservices';
 import {
   ServiceBootstrapOptions,
   TransportSetupOtions,
-} from './../bootstraps/types/bootstrap.type';
+} from '../../bootstraps/types/bootstrap.type';
 import * as _ from 'lodash';
 import * as fg from 'fast-glob';
 

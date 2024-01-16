@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { ConsoleLogger, Inject, Injectable, LogLevel } from '@nestjs/common';
 import { APM_INSTANCE } from '@skygate/plugins';
 import { isLocal } from '@skygate/shared';

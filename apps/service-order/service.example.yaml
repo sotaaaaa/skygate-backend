@@ -22,6 +22,19 @@ transporters:
       protoPath: libs/protobuf/src/protos/service-order/**/*.proto
     timeout: 30000
 
+  # Cấu hình AMQP khi connect đến microservice
+  # Chỉ nên sử dụng trong các trường hợp (queue, topic) cần đảm bảo tính toàn vẹn dữ liệu
+  amqp:
+    enable: true # Cho phép sử dụng AMQP hay không
+    options:
+      exchanges:
+        - name: email-exchange
+          type: topic
+      uri: ${AMQP_URI_STRING}
+      enableControllerDiscovery: true
+      connectionInitOptions:
+        wait: false
+
   # Khi muốn gọi đến nhiều service thì có thể thêm nhiều cấu hình như dưới
   # Điều này là bắt buộc khi muốn gọi đến các service khác, chỉ define các service cần gọi
   # Cần chú ý đặt tên vì tên này sẽ được inject vào service để sử dụng
@@ -39,10 +52,6 @@ database:
   mongoose:
     - connectionName: ${DATABASE_CONNECTION_NAME} # Tên kết nối database
       uri: mongodb://localhost:27017/service-order # Địa chỉ và cổng của MongoDB
-      options:
-        useNewUrlParser: true # Sử dụng cú pháp mới khi kết nối MongoDB
-        useUnifiedTopology: true # Sử dụng topology thống nhất khi kết nối MongoDB
-        connectTimeoutMS: 5000 # Thời gian chờ kết nối tới MongoDB
 
 # Cấu hình APM (Application Performance Monitoring)
 # Có thể tắt bằng cách thêm biến môi trường APM_ACTIVE=false
@@ -51,5 +60,5 @@ APM:
   serverUrl: https://8f67a5637a834c7a9154ada3542afd42.apm.asia-southeast1.gcp.elastic-cloud.com:443
   secretToken: ${ELASTIC_APM_SECRET_TOKEN}
   environment: ${NODE_ENV}
-  active: true # Cho phép sử dụng APM hay không
+  active: false # Cho phép sử dụng APM hay không
   transactionSampleRate: 1.0 # Tỷ lệ mẫu giao dịch (tỷ lệ mẫu giao dịch mặc định là 1.0)

@@ -3,8 +3,7 @@ import { CoreTransporter } from './../transporters/core.transporter';
 import { AppUtils } from '@skygate/shared';
 import { ServiceBootstrapOptions } from './types/bootstrap.type';
 import { INestApplication, Logger } from '@nestjs/common';
-import { ElasticApmService, SimpleLoggerService } from '@skygate/plugins';
-import { ErrorExceptionFilter } from '@skygate/core';
+import { SimpleLoggerService } from '@skygate/plugins';
 
 /**
  * Bootstraps the service by killing the application with grace.
@@ -21,13 +20,9 @@ export async function serviceBootstrap(
   // Enable shutdown hooks.
   application.enableShutdownHooks();
 
-  // Get the APM instance.
-  const APM = application.get(ElasticApmService).instance;
-
   // Set the global prefix.
   application.useLogger(application.get(SimpleLoggerService));
   application.useGlobalPipes(new ValidationPipe());
-  application.useGlobalFilters(new ErrorExceptionFilter(APM));
 
   // Start all transporters.
   CoreTransporter.startAllTransporters(application, options);

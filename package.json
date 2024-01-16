@@ -20,7 +20,7 @@
     "@types/lodash": "4.14.202",
     "@types/mongoose": "5.11.97",
     "@types/mustache": "4.2.5",
-    "@types/node": "20.10.8",
+    "@types/node": "20.11.0",
     "@types/passport-jwt": "4.0.0",
     "@types/pdfmake": "0.2.8",
     "@types/supertest": "6.0.2",
@@ -48,6 +48,7 @@
     "typescript": "5.3.3"
   },
   "dependencies": {
+    "@golevelup/nestjs-rabbitmq": "^4.1.0",
     "@grpc/grpc-js": "^1.9.13",
     "@grpc/proto-loader": "^0.7.10",
     "@nestjs-modules/mailer": "1.10.3",
@@ -90,7 +91,6 @@
     "js-yaml": "4.1.0",
     "lodash": "4.17.21",
     "mongoose": "8.0.4",
-    "mustache": "4.2.0",
     "nestjs-minio-client": "^2.2.0",
     "nestjs-pino": "4.0.0",
     "nestjs-real-ip": "3.0.1",

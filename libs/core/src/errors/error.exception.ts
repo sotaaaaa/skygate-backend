@@ -28,4 +28,4 @@ export class ErrorException extends HttpException {
       super({ ...error, message: errorMessage }, HttpStatus.OK);
     }
   }
-}                                                                                                                                                                     
+}

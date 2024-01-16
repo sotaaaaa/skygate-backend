@@ -2,7 +2,7 @@ import { AppUtils } from '@skygate/shared';
 import {
   ServiceBootstrapOptions,
   TransportSetupOtions,
-} from './../bootstraps/types/bootstrap.type';
+} from '../../bootstraps/types/bootstrap.type';
 import { INestApplication, Logger } from '@nestjs/common';
 
 /**

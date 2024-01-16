@@ -1,4 +1,4 @@
-import { GrpcTransporter } from './grpc.transporter';
+import { GrpcTransporter } from './grpc/grpc.transporter';
 import { ServiceBootstrapOptions } from './../bootstraps/types/bootstrap.type';
 import { INestApplication } from '@nestjs/common';
 
