@@ -57,7 +57,7 @@ export class ValidationPipe implements PipeTransform {
 
     // Throw an exception with the validation errors
     throw new ErrorException({
-      code: ErrorCodes.HttpUnprocessableEntity,
+      errorCode: ErrorCodes.HttpUnprocessableEntity,
       errors: validationErrors,
       message: `Validation errors with properties [${errorProperties}]`,
     });

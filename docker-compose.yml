@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  psp-gateway:
+    image: nginx:latest
+    volumes:
+      - ./iac/nginx/gateway.conf:/etc/nginx/nginx.conf
+    ports:
+      - '9000:80'

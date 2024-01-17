@@ -6,11 +6,11 @@ import { AppUtils } from '@skygate/shared';
 
 @Global()
 @Module({})
-export class AmqpModule {
+export class RabbitMQExtraModule {
   /**
-   * Get the Amqp configurations from the provided configuration file.
+   * Get the RabbitMQ configurations from the provided configuration file.
    * @param path The path to the configuration file.
-   * @returns An array of Amqp configurations.
+   * @returns An array of RabbitMQ configurations.
    */
   static getConfigs(path: string) {
     // Read the configuration file
@@ -23,7 +23,7 @@ export class AmqpModule {
       return;
     }
 
-    // Extract the Amqp configurations
+    // Extract the RabbitMQ configurations
     const { transporters } = rootConfigs || {};
     const { amqp } = transporters || {};
 
@@ -31,9 +31,9 @@ export class AmqpModule {
   }
 
   /**
-   * Create a dynamic module for the Amqp module.
+   * Create a dynamic module for the RabbitMQ module.
    * @param path The path to the configuration file.
-   * @returns A dynamic module for the Amqp module.
+   * @returns A dynamic module for the RabbitMQ module.
    */
   static forRoot(path: string): DynamicModule {
     // Load the configuration file
@@ -41,20 +41,20 @@ export class AmqpModule {
 
     // Extract the enable and options properties from the configurations
     const isEnable = _.get(configs, 'enable', false);
-    const amqpOptions = _.get(configs, 'options', {});
+    const rabbitMQOptions = _.get(configs, 'options', {});
 
     // Create an array of dynamic modules to import
     const imports: DynamicModule[] = [
-      RabbitMQModule.forRoot(RabbitMQModule, amqpOptions),
+      RabbitMQModule.forRoot(RabbitMQModule, rabbitMQOptions),
     ];
 
-    // Log whether Amqp is enabled or not
-    Logger.log(isEnable ? 'Amqp connecting...' : 'Amqp is not enabled');
+    // Log whether RabbitMQ is enabled or not
+    Logger.log(isEnable ? 'RabbitMQ connecting...' : 'RabbitMQ is not enabled');
 
     return {
-      module: AmqpModule,
+      module: RabbitMQExtraModule,
       imports: isEnable ? imports : [],
-      exports: [RabbitMQModule],
+      exports: isEnable ? [RabbitMQModule] : [],
     };
   }
 }

@@ -4,6 +4,7 @@ import {
   HttpStatus,
   ExceptionFilter,
   Inject,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ErrorResponse } from './error.exception';
@@ -17,7 +18,7 @@ import * as _ from 'lodash';
 
 // Sử dụng decorator Catch để đánh dấu lớp này là global exception filter.
 @Catch()
-export class ErrorExceptionFilter implements ExceptionFilter {
+export class GlobalExceptionFilter implements ExceptionFilter {
   // Inject instance của APM vào filter.
   constructor(@Inject(APM_INSTANCE) private readonly elasticAPM: APM.Agent) {}
 
@@ -40,7 +41,7 @@ export class ErrorExceptionFilter implements ExceptionFilter {
 
       // Trả về default error response.
       return {
-        code: ErrorCodes.RpcRequestError,
+        errorCode: ErrorCodes.RpcRequestError,
         timestamp: new Date().toISOString(),
         message: exception.message || 'gRPC request error',
       };
@@ -56,16 +57,18 @@ export class ErrorExceptionFilter implements ExceptionFilter {
     // Lấy response từ exception. Thông thường đây là một object với property message.
     // Lấy error code từ exception response hoặc map status code thành error code.
     const exceptionResponse = (exception.getResponse && exception.getResponse()) || {};
-    const { statusCode, code, errors, message } = exceptionResponse as ErrorResponse & {
-      statusCode: HttpStatus;
-    };
-    const errorCode = code || ErrorMappings.nestJsErrorMapping(statusCode);
+    const { statusCode, errorCode, errors, message } =
+      exceptionResponse as ErrorResponse & {
+        statusCode: HttpStatus;
+      };
+    const errorCodeMapping = errorCode || ErrorMappings.nestJsErrorMapping(statusCode);
     const timestamp = new Date().toISOString();
     const isHttpRequest = host.getType() === 'http';
 
     // Log exception vào console.
     // Capture lỗi trong APM để theo dõi.
     this.elasticAPM.captureError(exception);
+    Logger.error(exception, this.constructor.name);
 
     // Nếu exception là RPC exception, parse thông tin chi tiết từ exception.
     if (isHttpRequest && !statusCode) {
@@ -78,7 +81,7 @@ export class ErrorExceptionFilter implements ExceptionFilter {
 
     // Tạo object error response.
     const errorResponse = {
-      code: errorCode,
+      errorCode: errorCodeMapping,
       timestamp: timestamp,
       errors: errors,
       message: message || AppConstants.errors.defaultMessage,
@@ -92,7 +95,7 @@ export class ErrorExceptionFilter implements ExceptionFilter {
 
       // Throw error với code và message.
       return throwError(() => ({
-        code: ErrorMappings.grpcErrorMapping(statusCode),
+        errorCode: ErrorMappings.grpcErrorMapping(statusCode),
         message: errorResponse.message,
         details: rpcErrorResponse,
       }));

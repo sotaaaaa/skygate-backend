@@ -34,6 +34,9 @@ transporters:
       enableControllerDiscovery: true
       connectionInitOptions:
         wait: false
+        timeout: 5000
+      connectionManagerOptions:
+        reconnectTimeInSeconds: 2
 
   # Khi muốn gọi đến nhiều service thì có thể thêm nhiều cấu hình như dưới
   # Điều này là bắt buộc khi muốn gọi đến các service khác, chỉ define các service cần gọi

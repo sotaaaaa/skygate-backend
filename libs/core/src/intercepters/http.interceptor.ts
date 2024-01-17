@@ -85,10 +85,7 @@ export class HttpInterceptor<T> implements NestInterceptor<T> {
         Logger.log(`${endpoint} ${transaction.result} [${Date.now() - preTimeNow}ms]`);
         this.setTraceToHeadersAndEndTransaction(response, transaction);
 
-        return {
-          code: ErrorCodes.HttpSuccess,
-          data: data,
-        };
+        return { errorCode: ErrorCodes.HttpSuccess, data };
       }),
       catchError((error) => {
         // Log info result and duration of the transaction

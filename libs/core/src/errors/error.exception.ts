@@ -4,7 +4,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import * as _ from 'lodash';
 
 export type ErrorResponse = {
-  code: ErrorCodes;
+  errorCode: ErrorCodes;
   message?: string;
   errors?: Record<string, any>[];
 };
@@ -17,7 +17,10 @@ export class ErrorException extends HttpException {
   constructor(error: number | ErrorResponse) {
     if (_.isNumber(error)) {
       // Return response with custom error code
-      super({ code: error, message: AppConstants.errors.defaultMessage }, HttpStatus.OK);
+      super(
+        { errorCode: error, message: AppConstants.errors.defaultMessage },
+        HttpStatus.OK,
+      );
 
       /**
        * Return error response with custom status code

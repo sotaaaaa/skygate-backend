@@ -4,7 +4,7 @@ import { ModuleBootstrapOptions } from './module/types/module.type';
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ClientGrpcModule } from '@skygate/plugins';
 import { DatabaseModule, DatabaseTypes } from '@skygate/core/databases';
-import { AmqpModule } from '@skygate/core/transporters';
+import { RabbitMQExtraModule } from '@skygate/core/transporters';
 
 /**
  * Represents the bootstrap class for the CoreModule.
@@ -29,7 +29,7 @@ export class CoreModuleBootstrap {
         }),
         ClientGrpcModule.forPlugin(options.path),
         DatabaseModule.forRoot(options.path, { allows: [DatabaseTypes.MONGOOSE] }),
-        AmqpModule.forRoot(options.path),
+        RabbitMQExtraModule.forRoot(options.path),
       ],
       global: true,
     };
