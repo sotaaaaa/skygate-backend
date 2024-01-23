@@ -53,6 +53,7 @@ export class ErrorMappings {
       [HttpStatus.METHOD_NOT_ALLOWED]: status.CANCELLED,
       [HttpStatus.PRECONDITION_FAILED]: status.FAILED_PRECONDITION,
       499: status.CANCELLED,
+      11000: status.ALREADY_EXISTS,
     };
 
     // Nếu không tìm thấy HTTP status code trong mapping, trả về UNKNOWN.

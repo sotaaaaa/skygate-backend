@@ -1,2 +1,1 @@
-export * from './winston.module';
-export * from './logging';
+export * from './factories';

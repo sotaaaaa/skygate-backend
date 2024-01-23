@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
@@ -47,9 +47,6 @@ export class RabbitMQExtraModule {
     const imports: DynamicModule[] = [
       RabbitMQModule.forRoot(RabbitMQModule, rabbitMQOptions),
     ];
-
-    // Log whether RabbitMQ is enabled or not
-    Logger.log(isEnable ? 'RabbitMQ connecting...' : 'RabbitMQ is not enabled');
 
     return {
       module: RabbitMQExtraModule,

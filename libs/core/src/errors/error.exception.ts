@@ -1,7 +1,7 @@
 import { ErrorCodes } from '../constants/error.constant';
 import { AppConstants } from '../constants/app.constant';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 export type ErrorResponse = {
   errorCode: ErrorCodes;

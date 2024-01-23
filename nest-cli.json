@@ -26,15 +26,6 @@
         "tsConfigPath": "apps/service-merchant/tsconfig.app.json"
       }
     },
-    "service-order": {
-      "type": "application",
-      "root": "apps/service-order",
-      "entryFile": "main",
-      "sourceRoot": "apps/service-order/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/service-order/tsconfig.app.json"
-      }
-    },
     "service-resource": {
       "type": "application",
       "root": "apps/service-resource",
@@ -78,6 +69,105 @@
       "sourceRoot": "libs/plugins/src",
       "compilerOptions": {
         "tsConfigPath": "libs/plugins/tsconfig.lib.json"
+      }
+    },
+    "service-auth": {
+      "type": "application",
+      "root": "apps/service-auth",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-auth/tsconfig.app.json"
+      }
+    },
+    "service-bill": {
+      "type": "application",
+      "root": "apps/service-bill",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-bill/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-bill/tsconfig.app.json"
+      }
+    },
+    "service-system-configs": {
+      "type": "application",
+      "root": "apps/service-system-configs",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-system-configs/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-system-configs/tsconfig.app.json"
+      }
+    },
+    "service-report": {
+      "type": "application",
+      "root": "apps/service-report",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-report/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-report/tsconfig.app.json"
+      }
+    },
+    "service-payment-gateway": {
+      "type": "application",
+      "root": "apps/service-payment-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-payment-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-payment-gateway/tsconfig.app.json"
+      }
+    },
+    "service-payment-qr": {
+      "type": "application",
+      "root": "apps/service-payment-qr",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-payment-qr/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-payment-qr/tsconfig.app.json"
+      }
+    },
+    "service-bank-connector": {
+      "type": "application",
+      "root": "apps/service-bank-connector",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-bank-connector/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-bank-connector/tsconfig.app.json"
+      }
+    },
+    "service-tms": {
+      "type": "application",
+      "root": "apps/service-tms",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-tms/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-tms/tsconfig.app.json"
+      }
+    },
+    "service-notification": {
+      "type": "application",
+      "root": "apps/service-notification",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-notification/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-notification/tsconfig.app.json"
+      }
+    },
+    "service-developer-portal": {
+      "type": "application",
+      "root": "apps/service-developer-portal",
+      "entryFile": "main",
+      "sourceRoot": "apps/service-developer-portal/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/service-developer-portal/tsconfig.app.json"
+      }
+    },
+    "auth": {
+      "type": "library",
+      "root": "libs/auth",
+      "entryFile": "index",
+      "sourceRoot": "libs/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/auth/tsconfig.lib.json"
       }
     }
   },

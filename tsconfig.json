@@ -6,6 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
@@ -25,7 +26,9 @@
       "@skygate/plugins": ["libs/plugins/src"],
       "@skygate/plugins/*": ["libs/plugins/src/*"],
       "@skygate/shared": ["libs/shared/src"],
-      "@skygate/shared/*": ["libs/shared/src/*"]
+      "@skygate/shared/*": ["libs/shared/src/*"],
+      "@skygate/auth": ["libs/auth/src"],
+      "@skygate/auth/*": ["libs/auth/src/*"]
     }
   }
 }

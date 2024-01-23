@@ -5,6 +5,8 @@ import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ClientGrpcModule } from '@skygate/plugins';
 import { DatabaseModule, DatabaseTypes } from '@skygate/core/databases';
 import { RabbitMQExtraModule } from '@skygate/core/transporters';
+import { AuthzModule } from '@skygate/auth';
+import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
 
 /**
  * Represents the bootstrap class for the CoreModule.
@@ -27,9 +29,13 @@ export class CoreModuleBootstrap {
           path: options.path,
           envFilePath: options.envFilePath,
         }),
+        OpenTelemetryModule.forRoot({ serviceName: options.serviceName }),
         ClientGrpcModule.forPlugin(options.path),
         DatabaseModule.forRoot(options.path, { allows: [DatabaseTypes.MONGOOSE] }),
         RabbitMQExtraModule.forRoot(options.path),
+
+        // Import module support casl authorization
+        AuthzModule,
       ],
       global: true,
     };

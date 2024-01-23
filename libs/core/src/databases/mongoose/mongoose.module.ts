@@ -37,8 +37,6 @@ export class MongooseConnectModule {
     const configs = this.getConfigs(path);
     const imports: DynamicModule[] = [];
 
-    Logger.log('Mongoose connecting...');
-
     // Connect to each MongoDB database based on the configuration
     configs.forEach((config) => {
       const { connectionName, uri, options } = config;
@@ -47,7 +45,6 @@ export class MongooseConnectModule {
         connectionName,
       });
 
-      Logger.log(`Mongoose created connection ${connectionName}`);
       imports.push(module);
     });
 

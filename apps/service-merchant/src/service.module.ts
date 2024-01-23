@@ -6,7 +6,8 @@ import { MerchantModule } from './merchant/merchant.module';
   imports: [
     CoreModuleBootstrap.register({
       path: process.env.configfile || 'apps/service-merchant/service.config.yaml',
-      envFilePath: 'apps/service-merchant/.env',
+      envFilePath: process.env.envfile || 'apps/service-merchant/.env',
+      serviceName: 'ServiceMerchant',
     }),
     MerchantModule,
   ],

@@ -1,0 +1,57 @@
+version: 1.0
+
+# Cấu hình ứng dụng toàn bộ ứng dụng
+# Các cấu hình này sẽ được inject vào service để sử dụng
+application:
+  # Cổng mà ứng dụng sẽ lắng nghe
+  # Có thể thay đổi bằng cách thêm biến môi trường PORT
+  port: ${PORT}
+
+  # Môi trường chạy của ứng dụng
+  env: ${NODE_ENV}
+
+# Cấu hình các transporters (giao tiếp với các microservice)
+transporters:
+  # Cấu hình GRPC khi connect đến microservice
+  # Timeout là thời gian chờ response khi gửi message
+  grpc:
+    enable: false # Cho phép sử dụng GRPC hay không
+    options:
+      url: localhost:50054
+      package: com.skygate.service.report
+      protoPath: libs/protobuf/src/protos/service-report/**/*.proto
+    timeout: 30000
+
+  # Cấu hình AMQP khi connect đến microservice
+  # Chỉ nên sử dụng trong các trường hợp (queue, topic) cần đảm bảo tính toàn vẹn dữ liệu
+  amqp:
+    enable: false # Cho phép sử dụng AMQP hay không
+    options:
+      exchanges:
+      uri: ${AMQP_URI_STRING}
+      enableControllerDiscovery: true
+      connectionInitOptions:
+        wait: false
+        timeout: 5000
+      connectionManagerOptions:
+        reconnectTimeInSeconds: 2
+
+  # Khi muốn gọi đến nhiều service thì có thể thêm nhiều cấu hình như dưới
+  # Điều này là bắt buộc khi muốn gọi đến các service khác, chỉ define các service cần gọi
+  # Cần chú ý đặt tên vì tên này sẽ được inject vào service để sử dụng
+  grpc-clients:
+    - name: ServiceAuth
+      options:
+        url: localhost:50051
+        package: com.skygate.service.auth
+        protoPath: libs/protobuf/src/protos/service-auth/**/*.proto
+      timeout: 30000
+
+# Cấu hình truy cập vào các database
+# Có thể thêm nhiều kết nối database khác nhau theo cú pháp dưới
+database:
+  mongoose:
+    - connectionName: ${DATABASE_CONNECTION_NAME} # Tên kết nối database
+      uri: mongodb+srv://sky:${DATABASE_PASSWORD}@cluster0.ipcjqts.mongodb.net/service-report # Địa chỉ và cổng của MongoDB
+      options:
+        connectTimeoutMS: 5000 # Thời gian chờ kết nối tới MongoDB

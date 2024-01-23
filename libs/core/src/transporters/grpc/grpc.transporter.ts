@@ -5,8 +5,8 @@ import {
   ServiceBootstrapOptions,
   TransportSetupOtions,
 } from '../../bootstraps/types/bootstrap.type';
-import * as _ from 'lodash';
-import * as fg from 'fast-glob';
+import _ from 'lodash';
+import fg from 'fast-glob';
 
 export class GrpcTransporter extends BaseTransporter {
   constructor(app: INestApplication, options: ServiceBootstrapOptions) {

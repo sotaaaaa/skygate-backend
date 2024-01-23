@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  psp-gateway:
+  skygate-gateway:
     image: nginx:latest
     volumes:
       - ./iac/nginx/gateway.conf:/etc/nginx/nginx.conf

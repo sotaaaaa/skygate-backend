@@ -42,11 +42,11 @@ transporters:
   # Điều này là bắt buộc khi muốn gọi đến các service khác, chỉ define các service cần gọi
   # Cần chú ý đặt tên vì tên này sẽ được inject vào service để sử dụng
   grpc-clients:
-    - name: ServiceOrder
+    - name: ServiceAuth
       options:
         url: localhost:50051
-        package: com.skygate.service.order
-        protoPath: libs/protobuf/src/protos/service-order/**/*.proto
+        package: com.skygate.service.auth
+        protoPath: libs/protobuf/src/protos/service-auth/**/*.proto
       timeout: 30000
 
 # Cấu hình truy cập vào các database
@@ -54,16 +54,6 @@ transporters:
 database:
   mongoose:
     - connectionName: ${DATABASE_CONNECTION_NAME} # Tên kết nối database
-      uri: mongodb://localhost:27017/service-merchant # Địa chỉ và cổng của MongoDB
+      uri: mongodb+srv://sky:${DATABASE_PASSWORD}@cluster0.ipcjqts.mongodb.net/service-merchant # Địa chỉ và cổng của MongoDB
       options:
         connectTimeoutMS: 5000 # Thời gian chờ kết nối tới MongoDB
-
-# Cấu hình APM (Application Performance Monitoring)
-# Có thể tắt bằng cách thêm biến môi trường APM_ACTIVE=false
-APM:
-  serviceName: ${SERVICE_NAME}
-  serverUrl: https://8f67a5637a834c7a9154ada3542afd42.apm.asia-southeast1.gcp.elastic-cloud.com:443
-  secretToken: ${ELASTIC_APM_SECRET_TOKEN}
-  environment: ${NODE_ENV}
-  active: false # Cho phép sử dụng APM hay không
-  transactionSampleRate: 1.0 # Tỷ lệ mẫu giao dịch (tỷ lệ mẫu giao dịch mặc định là 1.0)

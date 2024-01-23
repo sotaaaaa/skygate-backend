@@ -1,21 +1,20 @@
 import { Controller, Get, Logger } from '@nestjs/common';
-import { ServiceToClient } from '@skygate/core';
+import { MerchantActions, MerchantSubjects, MerchantCheckAbilities } from '@skygate/auth';
 import { ClientGrpcService } from '@skygate/plugins';
 import {
-  SERVICE_ORDER_SERVICE_NAME,
-  ServiceOrderClient,
-} from '@skygate/protobuf/protobufs/order.pb';
+  AUTH_MERCHANT_SERVICE_NAME,
+  AuthMerchantClient,
+} from '@skygate/protobuf/protobufs/auth-merchant.pb';
 
 @Controller()
 export class MerchantController {
-  @ClientGrpcService('ServiceOrder', SERVICE_ORDER_SERVICE_NAME)
-  private readonly serviceOrderClient: ServiceOrderClient;
+  @ClientGrpcService('ServiceAuth', AUTH_MERCHANT_SERVICE_NAME)
+  private readonly authMerchant: AuthMerchantClient;
 
-  @ServiceToClient()
-  @Get('/merchant/ping')
+  @Get('/ping')
+  @MerchantCheckAbilities([MerchantActions.MANAGE, MerchantSubjects.ALL])
   async pingService() {
     Logger.log('Received ping request from client.');
-    const response = await this.serviceOrderClient.pingService({}).toPromise();
-    return response;
+    return { serviceIsAlive: true };
   }
 }

@@ -1,7 +1,5 @@
 import { ClientGrpcExtraService } from './service/client-grpc.service';
-import { CLIENT_GRPC_ELASTIC_APM } from './constants/client-grpc.constant';
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { ElasticApmService } from '@skygate/plugins/elastic-apm';
 import { AppUtils } from '@skygate/shared';
 import {
   ClientsModule,
@@ -9,8 +7,8 @@ import {
   GrpcOptions,
   Transport,
 } from '@nestjs/microservices';
-import * as _ from 'lodash';
-import * as fg from 'fast-glob';
+import _ from 'lodash';
+import fg from 'fast-glob';
 
 @Global()
 @Module({})
@@ -51,14 +49,7 @@ export class ClientGrpcModule {
     // Return module configuration
     return {
       module: ClientGrpcModule,
-      providers: [
-        ClientGrpcExtraService,
-        {
-          provide: CLIENT_GRPC_ELASTIC_APM,
-          useFactory: (apmService: ElasticApmService) => apmService.instance,
-          inject: [ElasticApmService],
-        },
-      ],
+      providers: [ClientGrpcExtraService],
       exports: [ClientGrpcExtraService],
       imports: imports,
     };

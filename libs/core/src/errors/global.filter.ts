@@ -3,25 +3,19 @@ import {
   ArgumentsHost,
   HttpStatus,
   ExceptionFilter,
-  Inject,
   Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ErrorResponse } from './error.exception';
 import { ErrorMappings } from './error.mapping';
 import { AppConstants, ErrorCodes } from '@skygate/core/constants';
-import { APM_INSTANCE } from '@skygate/plugins';
 import { RpcException } from '@nestjs/microservices';
 import { throwError } from 'rxjs';
-import * as APM from 'elastic-apm-node';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 // Sử dụng decorator Catch để đánh dấu lớp này là global exception filter.
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  // Inject instance của APM vào filter.
-  constructor(@Inject(APM_INSTANCE) private readonly elasticAPM: APM.Agent) {}
-
   /**
    * Parse thông tin chi tiết từ exception thành error response.
    * Details có thể là string hoặc object stringified.
@@ -32,13 +26,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       // Lấy thông tin chi tiết từ exception dưới dạng string.
       // Parse thông tin chi tiết từ exception thành JSON.
       const exceptionResponseString = exception['details'];
-      return JSON.parse(exceptionResponseString);
+      return _.get(exception, 'response.errorCode')
+        ? exception['response']
+        : JSON.parse(exceptionResponseString);
 
       // Nếu có lỗi khi parse thông tin chi tiết từ exception, trả về default error response.
     } catch (error) {
-      // Capture lỗi trong APM để theo dõi.
-      this.elasticAPM.captureError(exception);
-
       // Trả về default error response.
       return {
         errorCode: ErrorCodes.RpcRequestError,
@@ -61,13 +54,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       exceptionResponse as ErrorResponse & {
         statusCode: HttpStatus;
       };
-    const errorCodeMapping = errorCode || ErrorMappings.nestJsErrorMapping(statusCode);
+    const errorCodeMapping =
+      errorCode || ErrorMappings.nestJsErrorMapping(statusCode || exception['code']);
     const timestamp = new Date().toISOString();
     const isHttpRequest = host.getType() === 'http';
 
     // Log exception vào console.
-    // Capture lỗi trong APM để theo dõi.
-    this.elasticAPM.captureError(exception);
     Logger.error(exception, this.constructor.name);
 
     // Nếu exception là RPC exception, parse thông tin chi tiết từ exception.
@@ -95,7 +87,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       // Throw error với code và message.
       return throwError(() => ({
-        errorCode: ErrorMappings.grpcErrorMapping(statusCode),
+        code: ErrorMappings.grpcErrorMapping(statusCode),
         message: errorResponse.message,
         details: rpcErrorResponse,
       }));

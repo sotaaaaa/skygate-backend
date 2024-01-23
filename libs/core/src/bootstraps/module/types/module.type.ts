@@ -9,4 +9,5 @@ export interface CorePluginRegister {
 export interface ModuleBootstrapOptions {
   path: string;
   envFilePath: string;
+  serviceName?: string;
 }

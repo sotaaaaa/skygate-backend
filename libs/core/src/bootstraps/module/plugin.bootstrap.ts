@@ -1,7 +1,6 @@
 import { CorePluginRegister } from './types/module.type';
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ElasticApmPluginModule, WinstonPluginModule } from '@skygate/plugins';
 import { AppUtils } from '@skygate/shared';
 
 /**
@@ -29,10 +28,6 @@ export class CorePluginModule {
       }),
 
       // Import plugins required for the application.
-      ElasticApmPluginModule.forPlugin(),
-      WinstonPluginModule.forPlugin(),
-
-      // Import other all plugins.
       ...importPlugins,
     ];
 
